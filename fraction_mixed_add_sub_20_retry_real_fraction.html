@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+<title>Fraction Hero - บวก ลบ เศษส่วนจำนวนคละ</title>
+<style>
+  :root{
+    --bg1:#fff7d6; --bg2:#dff7ff; --ink:#17324d; --blue:#2066d1; --pink:#ff5a8b; --green:#13a86b; --red:#ef4444; --yellow:#ffd84d; --card:#ffffffee;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:"Trebuchet MS", "Noto Sans Thai", system-ui, sans-serif;color:var(--ink);min-height:100vh;background:radial-gradient(circle at top left,#fff 0 10%,transparent 22%),linear-gradient(135deg,var(--bg1),var(--bg2));overflow-x:hidden}
+  .screen{display:none;min-height:100vh;padding:20px;align-items:center;justify-content:center}.screen.active{display:flex}
+  .card{width:min(980px,96vw);background:var(--card);border:5px solid #183b75;border-radius:34px;box-shadow:0 18px 0 #15376b,0 26px 45px #17324d30;padding:24px;position:relative;overflow:hidden}
+  h1{font-size:clamp(34px,6vw,72px);line-height:1.05;margin:6px 0 12px;text-align:center;color:#143b82;text-shadow:3px 3px 0 #ffd84d}.subtitle{text-align:center;font-size:clamp(18px,2.5vw,28px);font-weight:900;color:#e13c72}.badge{display:inline-block;background:#183b75;color:#fff;border-radius:999px;padding:8px 18px;font-weight:900;margin:4px;box-shadow:0 4px 0 #0d2147}.inputName{display:block;width:min(520px,90%);margin:20px auto;font-size:26px;text-align:center;padding:16px 20px;border-radius:22px;border:4px solid #17324d;background:#fff}.btn{border:0;border-radius:22px;padding:14px 24px;margin:8px;font-size:clamp(18px,2.4vw,25px);font-weight:1000;cursor:pointer;color:#fff;background:linear-gradient(#2f7cff,#124ec5);box-shadow:0 8px 0 #0d3d9e;transition:.08s transform}.btn:active{transform:translateY(5px);box-shadow:0 3px 0 #0d3d9e}.btn.pink{background:linear-gradient(#ff7aa4,#e62968);box-shadow:0 8px 0 #a81446}.btn.green{background:linear-gradient(#25d88a,#0b9d61);box-shadow:0 8px 0 #087447}.btn.dark{background:linear-gradient(#344054,#111827);box-shadow:0 8px 0 #020617}.center{text-align:center}.reviewGrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px;margin-top:16px}.mini{background:#fff;border:3px solid #17324d;border-radius:22px;padding:16px;font-size:18px;font-weight:800}.mini b{color:#e13c72}.hud{display:flex;justify-content:space-between;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:14px}.pill{background:#17324d;color:white;border-radius:18px;padding:10px 14px;font-size:18px;font-weight:1000}.gameBox{background:#fff;border:5px solid #17324d;border-radius:30px;padding:18px;box-shadow:inset 0 0 0 5px #fff1a8}.question{font-size:clamp(34px,7vw,74px);font-weight:1000;text-align:center;margin:14px 0;color:#0f2d68}.hint{font-size:18px;font-weight:900;text-align:center;color:#42526b;margin:4px 0 14px}.answerRow{display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap;margin:18px 0}.ans{width:90px;font-size:32px;text-align:center;border:4px solid #17324d;border-radius:18px;padding:10px;background:#fff9d9;font-weight:1000;color:#17324d}.ans.whole{width:110px}.slash{font-size:45px;font-weight:1000}.keypad{display:grid;grid-template-columns:repeat(6,1fr);gap:8px;max-width:600px;margin:12px auto}.key{font-size:24px;font-weight:1000;border:3px solid #17324d;border-radius:16px;padding:12px;background:#fff;box-shadow:0 4px 0 #c5d8f5;cursor:pointer}.key.util{background:#ffe1ec}.activeInput{outline:5px solid #ff5a8b;background:#fff1a8}.feedback{min-height:72px;text-align:center;font-size:clamp(22px,3vw,34px);font-weight:1000;margin-top:10px}.ok{color:var(--green)}.bad{color:var(--red)}.warn{color:#d97706}.solution{background:#eef7ff;border:3px dashed #2066d1;border-radius:20px;padding:14px;margin-top:12px;font-size:20px;font-weight:800;display:none}.solution.show{display:block}.summaryTable{width:100%;border-collapse:collapse;background:#fff;font-size:16px}.summaryTable th,.summaryTable td{border:2px solid #17324d;padding:8px;text-align:center}.summaryTable th{background:#17324d;color:#fff}.scrollArea{max-height:55vh;overflow:auto;border-radius:18px}.confetti{position:fixed;inset:0;pointer-events:none;z-index:99}.pop{position:fixed;left:50%;top:45%;transform:translate(-50%,-50%) scale(.5);font-size:90px;opacity:0;transition:.25s;z-index:100}.pop.show{opacity:1;transform:translate(-50%,-50%) scale(1)}
+
+  .question{display:flex;align-items:center;justify-content:center;gap:18px;flex-wrap:wrap;min-height:135px}
+  .mixed{display:inline-flex;align-items:center;gap:8px;vertical-align:middle}
+  .wholeNum{font-size:clamp(42px,7vw,82px);font-weight:1000;color:#0f2d68;line-height:1}
+  .frac{display:inline-grid;grid-template-rows:auto 5px auto;align-items:center;justify-items:center;min-width:66px;vertical-align:middle}
+  .frac .top,.frac .bottom{font-size:clamp(34px,6vw,70px);font-weight:1000;line-height:.95;color:#0f2d68}
+  .frac .bar{width:100%;height:5px;background:#0f2d68;border-radius:999px;margin:5px 0}
+  .op{font-size:clamp(42px,7vw,78px);font-weight:1000;color:#e13c72;line-height:1}
+  .answerRow{gap:16px}
+  .answerMixed{display:flex;align-items:center;gap:10px;justify-content:center;flex-wrap:wrap;background:#fff;border:4px solid #17324d;border-radius:24px;padding:14px 16px;box-shadow:0 7px 0 #c8d8f1}
+  .answerFrac{display:grid;grid-template-rows:auto 4px auto;align-items:center;justify-items:center;gap:4px}
+  .answerFrac .bar{height:4px;background:#17324d;width:96px;border-radius:999px}
+  .answerLabel{font-size:18px;font-weight:1000;color:#e13c72;margin-bottom:3px;text-align:center}
+
+  @media(max-width:620px){.card{padding:14px;border-radius:24px}.keypad{grid-template-columns:repeat(5,1fr)}.ans{width:76px;font-size:28px}.ans.whole{width:94px}.gameBox{padding:12px}.question{font-size:44px}.pill{font-size:15px;padding:8px 10px}}
+</style>
+</head>
+<body>
+<div class="pop" id="pop">✨</div>
+<canvas class="confetti" id="confetti"></canvas>
+
+<section class="screen active" id="startScreen"><div class="card">
+  <h1>Fraction Hero</h1>
+  <div class="subtitle">พิชิตบวก–ลบเศษส่วนจำนวนคละ 🧠✨</div>
+  <p class="center"><span class="badge">20 ข้อ</span><span class="badge">ตอบได้ 3 ครั้ง/ข้อ</span><span class="badge">ผิดครบเฉลยทันที</span></p>
+  <input class="inputName" id="playerName" placeholder="พิมพ์ชื่อนักเรียน" />
+  <div class="center"><button class="btn green" onclick="showReview()">เริ่มทบทวนก่อนเล่น</button></div>
+</div></section>
+
+<section class="screen" id="reviewScreen"><div class="card">
+  <h1 style="font-size:clamp(30px,5vw,56px)">ทบทวนสั้น ๆ ก่อนลุย 📚</h1>
+  <div class="reviewGrid">
+    <div class="mini"><b>1) ทำตัวส่วนให้เท่ากัน</b><br>เช่น 5 กับ 6 ใช้ ค.ร.น. = 30<br>2/5 = 12/30, 1/6 = 5/30</div>
+    <div class="mini"><b>2) จำนวนคละ + เศษส่วน</b><br>บวกเศษส่วนก่อน ถ้าเศษเกิน ให้ทดเป็นจำนวนเต็ม</div>
+    <div class="mini"><b>3) จำนวนคละ - เศษส่วน</b><br>ถ้าเศษไม่พอลบ ให้ยืม 1 จากจำนวนเต็ม</div>
+    <div class="mini"><b>4) ตอบเป็นเศษส่วนอย่างต่ำ</b><br>ถ้าตอบยังไม่ต่ำสุด เกมจะเตือนให้แก้ก่อน</div>
+  </div>
+  <div class="center"><button class="btn" onclick="startGame()">เข้าสู่เกม</button></div>
+</div></section>
+
+<section class="screen" id="gameScreen"><div class="card">
+  <div class="hud"><div class="pill" id="qNo">ข้อ 1/20</div><div class="pill" id="scoreHud">คะแนน 0</div><div class="pill" id="tryHud">โอกาส 3 ครั้ง</div></div>
+  <div class="gameBox">
+    <div class="hint" id="typeHint">ตอบเป็นจำนวนคละอย่างต่ำ</div>
+    <div class="question" id="questionText"></div>
+    <div class="answerRow">
+      <div class="answerMixed">
+        <div>
+          <div class="answerLabel">จำนวนเต็ม</div>
+          <input class="ans whole" id="whole" inputmode="none" placeholder="0" readonly onclick="setActive('whole')">
+        </div>
+        <div class="answerFrac">
+          <input class="ans" id="num" inputmode="none" placeholder="เศษ" readonly onclick="setActive('num')">
+          <div class="bar"></div>
+          <input class="ans" id="den" inputmode="none" placeholder="ส่วน" readonly onclick="setActive('den')">
+        </div>
+      </div>
+    </div>
+    <div class="keypad" id="keypad"></div>
+    <div class="center">
+      <button class="btn green" id="submitBtn" onclick="checkAnswer()">ส่งคำตอบ</button>
+      <button class="btn dark" onclick="clearAns()">ล้าง</button>
+      <button class="btn pink" id="nextBtn" style="display:none" onclick="nextQuestion()">ข้อต่อไป ➜</button>
+    </div>
+    <div class="feedback" id="feedback"></div>
+    <div class="solution" id="solution"></div>
+  </div>
+</div></section>
+
+<section class="screen" id="summaryScreen"><div class="card">
+  <h1 style="font-size:clamp(32px,5vw,60px)">สรุปผลการเล่น 🏆</h1>
+  <div class="subtitle" id="finalText"></div>
+  <div class="center"><button class="btn" onclick="window.print()">พิมพ์/บันทึกเป็น PDF ส่งครู</button><button class="btn pink" onclick="location.reload()">เล่นใหม่</button></div>
+  <div class="scrollArea"><table class="summaryTable" id="resultTable"></table></div>
+</div></section>
+
+<script>
+const problems = [
+ {q:'2 1/5 + 1/5', a:[2,2,5], steps:'ตัวส่วนเท่ากัน: 1/5 + 1/5 = 2/5 ดังนั้นตอบ 2 2/5'},
+ {q:'1 2/5 + 1/6', a:[1,17,30], steps:'ค.ร.น. ของ 5 และ 6 คือ 30 → 2/5=12/30, 1/6=5/30 → รวม 17/30'},
+ {q:'2 1/4 + 2/9', a:[2,17,36], steps:'ค.ร.น. 4 และ 9 คือ 36 → 1/4=9/36, 2/9=8/36 → รวม 17/36'},
+ {q:'3 1/8 + 1/9', a:[3,17,72], steps:'ค.ร.น. 8 และ 9 คือ 72 → 1/8=9/72, 1/9=8/72 → รวม 17/72'},
+ {q:'4 2/3 + 1/7', a:[4,17,21], steps:'ค.ร.น. 3 และ 7 คือ 21 → 2/3=14/21, 1/7=3/21 → รวม 17/21'},
+ {q:'2 5/6 + 1/8', a:[3,11,24], steps:'ค.ร.น. 6 และ 8 คือ 24 → 5/6=20/24, 1/8=3/24 → 23/24 → ตอบ 2 23/24', alt:[2,23,24]},
+ {q:'5 3/5 - 1/6', a:[5,13,30], steps:'ค.ร.น. 5 และ 6 คือ 30 → 3/5=18/30, 1/6=5/30 → เหลือ 13/30'},
+ {q:'4 7/8 - 2/9', a:[4,47,72], steps:'ค.ร.น. 8 และ 9 คือ 72 → 7/8=63/72, 2/9=16/72 → เหลือ 47/72'},
+ {q:'3 5/7 - 1/4', a:[3,13,28], steps:'ค.ร.น. 7 และ 4 คือ 28 → 5/7=20/28, 1/4=7/28 → เหลือ 13/28'},
+ {q:'6 2/3 - 1/8', a:[6,13,24], steps:'ค.ร.น. 3 และ 8 คือ 24 → 2/3=16/24, 1/8=3/24 → เหลือ 13/24'},
+ {q:'5 4/9 - 1/5', a:[5,11,45], steps:'ค.ร.น. 9 และ 5 คือ 45 → 4/9=20/45, 1/5=9/45 → เหลือ 11/45'},
+ {q:'1 2/5 + 2 1/6', a:[3,17,30], steps:'จำนวนเต็ม 1+2=3 และเศษส่วน 2/5+1/6 = 12/30+5/30 = 17/30'},
+ {q:'3 1/4 + 1 2/9', a:[4,17,36], steps:'จำนวนเต็ม 3+1=4 และเศษส่วน 1/4+2/9 = 9/36+8/36 = 17/36'},
+ {q:'2 3/8 + 3 2/5', a:[5,31,40], steps:'จำนวนเต็ม 2+3=5 และเศษส่วน 3/8+2/5 = 15/40+16/40 = 31/40'},
+ {q:'4 1/7 + 2 5/6', a:[6,41,42], steps:'จำนวนเต็ม 4+2=6 และเศษส่วน 1/7+5/6 = 6/42+35/42 = 41/42'},
+ {q:'1 4/9 + 3 2/5', a:[4,38,45], steps:'จำนวนเต็ม 1+3=4 และเศษส่วน 4/9+2/5 = 20/45+18/45 = 38/45'},
+ {q:'6 1/5 - 2 1/6', a:[4,1,30], steps:'จำนวนเต็ม 6-2=4 และเศษส่วน 1/5-1/6 = 6/30-5/30 = 1/30'},
+ {q:'7 3/8 - 3 2/9', a:[4,11,72], steps:'จำนวนเต็ม 7-3=4 และเศษส่วน 3/8-2/9 = 27/72-16/72 = 11/72'},
+ {q:'8 2/3 - 4 5/8', a:[4,1,24], steps:'เศษ 2/3 < 5/8? ไม่ใช่ เพราะ 16/24 > 15/24 → จำนวนเต็ม 8-4=4, เศษเหลือ 1/24'},
+ {q:'9 4/9 - 3 3/5', a:[5,38,45], steps:'ต้องยืม: 9 4/9 - 3 3/5 = 8 49/45 - 3 27/45 = 5 22/45', alt:[5,22,45]}
+];
+// Fix intended answers for two problems where prompt/answer mismatch found after authoring
+problems[5].a=[2,23,24];
+problems[19].a=[5,22,45];
+let idx=0, score=0, tries=3, active='whole', results=[];
+function $(id){return document.getElementById(id)}
+function show(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));$(id).classList.add('active')}
+function showReview(){show('reviewScreen')}
+function startGame(){show('gameScreen'); buildKeypad(); loadQ()}
+function buildKeypad(){let html=''; for(let i=0;i<=9;i++) html+=`<button class="key" onclick="press('${i}')">${i}</button>`; html+=`<button class="key util" onclick="backspace()">⌫</button><button class="key util" onclick="clearAns()">ล้าง</button>`; $('keypad').innerHTML=html}
+function setActive(id){active=id; ['whole','num','den'].forEach(x=>$(x).classList.toggle('activeInput',x===id))}
+function press(n){$(active).value += n}
+function backspace(){let el=$(active); el.value=el.value.slice(0,-1)}
+function clearAns(){['whole','num','den'].forEach(x=>$(x).value=''); setActive('whole')}
+function mixedHTML(token){
+  token=token.trim();
+  if(token.includes(' ')){
+    const [w, f]=token.split(' '); const [n,d]=f.split('/');
+    return `<span class="mixed"><span class="wholeNum">${w}</span><span class="frac"><span class="top">${n}</span><span class="bar"></span><span class="bottom">${d}</span></span></span>`;
+  }
+  if(token.includes('/')){
+    const [n,d]=token.split('/');
+    return `<span class="frac"><span class="top">${n}</span><span class="bar"></span><span class="bottom">${d}</span></span>`;
+  }
+  return `<span class="wholeNum">${token}</span>`;
+}
+function renderProblem(q){
+  const parts=q.match(/^(.+?)\s*([+\-])\s*(.+)$/);
+  if(!parts) return q;
+  return `${mixedHTML(parts[1])}<span class="op">${parts[2]}</span>${mixedHTML(parts[3])}`;
+}
+function loadQ(){tries=3; clearAns(); $('qNo').textContent=`ข้อ ${idx+1}/20`; $('scoreHud').textContent=`คะแนน ${score}`; $('tryHud').textContent='โอกาส 3 ครั้ง'; $('questionText').innerHTML=renderProblem(problems[idx].q); $('feedback').textContent=''; $('feedback').className='feedback'; $('solution').className='solution'; $('solution').innerHTML=''; $('nextBtn').style.display='none'; $('submitBtn').style.display='inline-block'; setActive('whole')}
+function gcd(a,b){a=Math.abs(a);b=Math.abs(b);while(b){[a,b]=[b,a%b]}return a||1}
+function normalize(w,n,d){w=Number(w)||0;n=Number(n)||0;d=Number(d)||0;if(d===0)return null; let total=w*d+n; let g=gcd(total,d); total/=g; d/=g; return [Math.floor(total/d), total%d, d]}
+function formatAns(a){return a[1]===0?`${a[0]}`:`${a[0]} ${a[1]}/${a[2]}`}
+function checkAnswer(){let w=$('whole').value, n=$('num').value, d=$('den').value; if(w===''||n===''||d===''){flash('⚠️'); $('feedback').className='feedback warn'; $('feedback').textContent='เติมให้ครบ 3 ช่องก่อนนะจ๊ะ'; return}
+ let raw=[Number(w),Number(n),Number(d)], norm=normalize(w,n,d), ans=problems[idx].a; if(!norm){return}
+ let rawEqual = raw[0]===ans[0]&&raw[1]===ans[1]&&raw[2]===ans[2]; let normEqual = norm[0]===ans[0]&&norm[1]===ans[1]&&norm[2]===ans[2];
+ if(normEqual && !rawEqual){$('feedback').className='feedback warn'; $('feedback').textContent='ใกล้แล้วจ้า แต่ต้องตอบเป็นเศษส่วนอย่างต่ำ/รูปมาตรฐานนะ'; tries--; $('tryHud').textContent=`เหลือ ${tries} ครั้ง`; if(tries<=0) reveal(false, raw); return; flash('🟡'); return}
+ if(rawEqual){score++; $('scoreHud').textContent=`คะแนน ${score}`; $('feedback').className='feedback ok'; $('feedback').textContent='ถูกต้องจ้า! เก่งมาก ✨'; flash('✅'); confetti(); results.push({q:problems[idx].q, your:formatAns(raw), ans:formatAns(ans), status:'ถูก'}); lockNext(); return}
+ tries--; $('tryHud').textContent=`เหลือ ${tries} ครั้ง`; if(tries>0){$('feedback').className='feedback bad'; $('feedback').textContent=`ยังไม่ถูกจ้า ลองใหม่อีกครั้งนะ (${tries} ครั้ง)`; flash('😵')} else reveal(false, raw)
+}
+function reveal(correct, raw){let p=problems[idx]; $('feedback').className='feedback bad'; $('feedback').textContent='ครบ 3 ครั้งแล้ว ดูเฉลยเป็นตัวอย่างก่อนนะ'; $('solution').className='solution show'; $('solution').innerHTML=`<b>เฉลย:</b> ${formatAns(p.a)}<br><b>วิธีคิด:</b> ${p.steps}`; flash('📘'); results.push({q:p.q, your:raw?formatAns(raw):'-', ans:formatAns(p.a), status:'ผิด/ดูเฉลย'}); lockNext()}
+function lockNext(){ $('submitBtn').style.display='none'; $('nextBtn').style.display='inline-block'}
+function nextQuestion(){idx++; if(idx>=problems.length) summary(); else loadQ()}
+function summary(){show('summaryScreen'); let percent=Math.round(score/problems.length*100); $('finalText').textContent=`${$('playerName').value||'นักเรียน'} ได้ ${score}/20 คะแนน (${percent}%) ${score>=16?'ผ่านจ้า 🎉':'ยังต้องฝึกเพิ่มอีกนิดนะ 💪'}`; let rows='<tr><th>ข้อ</th><th>โจทย์</th><th>คำตอบของเรา</th><th>เฉลย</th><th>ผล</th></tr>'; results.forEach((r,i)=>rows+=`<tr><td>${i+1}</td><td>${r.q}</td><td>${r.your}</td><td>${r.ans}</td><td>${r.status}</td></tr>`); $('resultTable').innerHTML=rows}
+function flash(icon){let p=$('pop');p.textContent=icon;p.classList.add('show');setTimeout(()=>p.classList.remove('show'),650)}
+function confetti(){const c=$('confetti'),ctx=c.getContext('2d');c.width=innerWidth;c.height=innerHeight;let pieces=Array.from({length:80},()=>({x:Math.random()*c.width,y:-20-Math.random()*200,r:4+Math.random()*8,v:3+Math.random()*5,a:Math.random()*6.28}));let t=0;(function draw(){ctx.clearRect(0,0,c.width,c.height);pieces.forEach(p=>{p.y+=p.v;p.x+=Math.sin(p.a+t/10)*2;ctx.fillRect(p.x,p.y,p.r,p.r)});t++; if(t<70) requestAnimationFrame(draw); else ctx.clearRect(0,0,c.width,c.height)})()}
+</script>
+</body>
+</html>
